@@ -15,8 +15,7 @@ var res = {
     AddCol_png: "res/Chessman/AddCol.png",
     DelCol_png: "res/Chessman/DelCol.png",
     Flip_png: "res/Chessman/Flip.png",
-    Grid1_png: "res/Grid/Grid1.png",
-    Grid2_png: "res/Grid/Grid2.png",
+    Grid_png: "res/Grid/Grid.png",
     BlueEjector_png: "res/Grid/BlueEjector.png",
     GreenEjector_png: "res/Grid/GreenEjector.png"
 };

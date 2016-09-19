@@ -296,6 +296,12 @@ var GameScene = cc.Scene.extend({
                 if (l == 0 && r == 0) {
                     continue;
                 }
+                /*
+                else if (l >= drawLCol || r >= drawRCol) {
+                    grid = new cc.Sprite(res.Grid_png);
+                    grid.tag = l * (drawRCol + 10) + r + this.lCol + this.rCol;
+                }
+                */
                 else if (r == 0) {
                     grid = new cc.Sprite(res.GreenEjector_png);
                     grid.tag = l - 1;
@@ -304,16 +310,12 @@ var GameScene = cc.Scene.extend({
                     grid = new cc.Sprite(res.BlueEjector_png);
                     grid.tag = this.lCol + r - 1;
                 }
-                else if ((l + r) % 2 == 0) {
-                    grid = new cc.Sprite(res.Grid1_png);
-                }
-                else {
-                    grid = new cc.Sprite(res.Grid2_png);
-                }
-
+                else continue;
+                
                 if (!ejectorScale) {
-                    ejectorScale = this.diagonal / Math.sqrt(2 * grid.width * grid.width);
+                    ejectorScale = this.diagonal / Math.sqrt(2 * grid.width * grid.width) - 0.03;
                 }
+                
                 grid.attr({
                     rotation: 45,
                     scale: ejectorScale,
@@ -323,6 +325,7 @@ var GameScene = cc.Scene.extend({
                 this.gridNode.addChild(grid);
             }
         }
+        
         //边框线
         this.border.clear();
         for (var i = 0; i <= drawLCol; i++) {
@@ -330,14 +333,14 @@ var GameScene = cc.Scene.extend({
                 i > 1 && i < drawLCol ?
                 cc.p(this.topVertX - this.halfDiagonal * (i - 1), this.boardLength - this.halfDiagonal * (i + 1)) :
                 cc.p(this.topVertX - this.halfDiagonal * (i - drawRCol), this.boardLength - this.halfDiagonal * (i + drawRCol)),
-                1, cc.color(128, 128, 128));
+                1, cc.color(255, 255, 255));
         }
         for (var i = 0; i <= drawRCol; i++) {
             this.border.drawSegment(cc.p(this.topVertX + this.halfDiagonal * i, this.boardLength - this.halfDiagonal * i),
                 i > 1 && i < drawRCol ?
                 cc.p(this.topVertX + this.halfDiagonal * (i - 1), this.boardLength - this.halfDiagonal * (i + 1)) :
                 cc.p(this.topVertX + this.halfDiagonal * (i - drawLCol), this.boardLength - this.halfDiagonal * (i + drawLCol)),
-               1, cc.color(128, 128, 128));
+                1, cc.color(255, 255, 255));
         }
 
         if (this.enableTimer) {
@@ -371,6 +374,10 @@ var GameScene = cc.Scene.extend({
                 chessman.setPosition((r - l) * this.halfDiagonal + this.topVertX,
                     this.boardLength - (l + r + 3) * this.halfDiagonal);
                 chessman.setTag(l * this.rCol + r);
+                chessman.attr({
+                    rotation: 45,
+                    scale: this.diagonal / Math.sqrt(2 * chessman.width * chessman.width) - 0.03
+                });
                 this.chessmanNode.addChild(chessman);
             }
         }
@@ -445,6 +452,10 @@ var GameScene = cc.Scene.extend({
             newChessman.setPosition(
                 this.halfDiagonal * (this.turn == left ? -col - 1 : col + 1) + this.topVertX,
                 this.boardLength - this.halfDiagonal * (col + 2));
+            newChessman.attr({
+                rotation: 45,
+                scale: this.diagonal / Math.sqrt(2 * newChessman.width * newChessman.width) - 0.03
+            });
             this.chessmanNode.addChild(newChessman);
             var movingAction = cc.moveBy(movingTime,
                 cc.p(this.turn == left ? this.halfDiagonal : -this.halfDiagonal, -this.halfDiagonal));
