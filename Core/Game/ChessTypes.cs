@@ -44,6 +44,11 @@ namespace Core.Game
     {
         public override string Name => "Key";
         public override ChessId Id => ChessId.Key;
+
+        protected override void DoProcess(Game game)
+        {
+            game.GetCurrentOperator().Surrender();
+        }
     }
 
     public class ChessFlip : ChessType
@@ -59,6 +64,7 @@ namespace Core.Game
             for (var j = 0; j < oldBoard.SizeRight; ++j)
                 newBoard[j, i] = oldBoard[i, j];
             game.Board = newBoard;
+            game.GetCurrentOperator().EndRound();
         }
     }
 

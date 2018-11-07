@@ -30,7 +30,7 @@ namespace Core.Game.Operator
             {
             }
 
-            public void Request(Network.Client client, int operatorId, byte function, byte operand)
+            public void Request(Network.Client client, byte function, byte operand)
             {
                 client.BeginRequest(Id);
                 client.WriteByte(function);
@@ -50,12 +50,14 @@ namespace Core.Game.Operator
         }
     }
 
-    public class ServerMaster : Local
+    public class ServerMaster : Server
     {
-        
+        public ServerMaster(Game game, EndPoint endPoint) : base(game, endPoint)
+        {
+        }
     }
 
-    public class ClientSlave : Remote
+    public class ClientSlave : Client
     {
         public bool Execute(int function, int operand)
         {
@@ -70,6 +72,10 @@ namespace Core.Game.Operator
                 default:
                     return false;
             }
+        }
+
+        protected ClientSlave(Game game, Network.Client connection) : base(game, connection)
+        {
         }
     }
 }

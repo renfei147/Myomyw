@@ -10,12 +10,17 @@ namespace Core.Game
             Right
         }
 
-        public OperatorIdentity CurrentOperatorIdentity { get; protected set; }
-        public ChessBoard Board { get; set; }
-        public Operator.Operator LeftOperator;
-        public Operator.Operator RightOperator;
+        private Operator.Operator LeftOperator;
 
-        private Operator.Operator GetCurrentOperator()
+        private Operator.Operator RightOperator;
+
+        public OperatorIdentity CurrentOperatorIdentity { get; protected set; }
+
+        public ChessBoard Board { get; set; }
+
+        private bool GameEnd { get; set; }
+
+        public Operator.Operator GetCurrentOperator()
         {
             switch (CurrentOperatorIdentity)
             {
@@ -27,7 +32,7 @@ namespace Core.Game
             }
         }
 
-        private Operator.Operator GetNextOperator()
+        public Operator.Operator GetNextOperator()
         {
             switch (CurrentOperatorIdentity)
             {
@@ -39,24 +44,101 @@ namespace Core.Game
             }
         }
 
-        public bool BeginCurrentRound()
+        public virtual bool BeginCurrentRound()
         {
-            throw new System.NotImplementedException();
+            return !GameEnd;
         }
 
-        public bool EndCurrentRound()
+        public virtual void StartGame()
         {
-            throw new System.NotImplementedException();
+            CurrentOperatorIdentity = OperatorIdentity.Left;
+            GetCurrentOperator().OnGameStart();
+            GetNextOperator().OnGameStart();
+            RoundTimerDoOnStart();
         }
 
-        public bool PushBall(int currentPad)
+        public virtual bool EndCurrentRound()
         {
-            throw new System.NotImplementedException();
+            if (!GameEnd)
+            {
+                RoundTimerDoOnExpire();
+                CurrentOperatorIdentity = CurrentOperatorIdentity == OperatorIdentity.Left
+                    ? OperatorIdentity.Right
+                    : OperatorIdentity.Left;
+                RoundTimerDoOnStart();
+            }
+            else
+            {
+                RoundTimerDoOnExpire();
+            }
+
+            return true;
         }
 
-        public bool Surrender(OperatorIdentity identity)
+        public virtual bool PushBall(int currentPad)
         {
-            throw new System.NotImplementedException();
+            if (!GameEnd)
+            {
+                switch (CurrentOperatorIdentity)
+                {
+                    case OperatorIdentity.Left:
+                        PushLeft(currentPad);
+                        break;
+                    case OperatorIdentity.Right:
+                        PushRight(currentPad);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual bool Surrender(OperatorIdentity identity)
+        {
+            if (!GameEnd)
+            {
+                GameEnd = true;
+                EndCurrentRound();
+                CurrentOperatorIdentity = identity;
+                GetNextOperator().OnGameEnd(true);
+                GetCurrentOperator().OnGameEnd(false);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual void RoundTimerDoOnStart()
+        {
+            GetCurrentOperator().OnSelfRoundTimerStart();
+            GetNextOperator().OnOpponentRoundTimerStart();
+        }
+
+        protected virtual void RoundTimerDoOnExpire()
+        {
+            GetCurrentOperator().OnSelfRoundTimerExpire();
+            GetNextOperator().OnOpponentRoundTimerExpire();
+        }
+
+        private void PushLeft(int pad)
+        {
+            var chessOut = Board[pad, Board.SizeRight - 1];
+            for (var right = Board.SizeRight - 1; right > 0; --right)
+                Board[pad, right] = Board[pad, right - 1];
+            ChessTypes.Get(chessOut).Process(this);
+        }
+
+        private void PushRight(int pad)
+        {
+            var chessOut = Board[Board.SizeLeft - 1, pad];
+            for (var left = Board.SizeLeft - 1; left > 0; --left)
+                Board[left, pad] = Board[left - 1, pad];
+            ChessTypes.Get(chessOut).Process(this);
         }
     }
 

@@ -29,9 +29,10 @@ namespace Core.Game
         {
             Resize(SizeLeft + deltaLeft, SizeRight + deltaRight);
         }
-
+        
         private void Resize(int newSizeLeft, int newSizeRight)
         {
+            if (newSizeLeft > 10 || newSizeRight > 10 || newSizeLeft < 3 || newSizeRight < 3) return;
             var board = new ChessId[newSizeLeft * newSizeRight];
             for (var i = 0; i < Math.Min(SizeLeft, newSizeLeft); ++i)
             for (var j = 0; j < Math.Min(SizeRight, newSizeRight); ++j)

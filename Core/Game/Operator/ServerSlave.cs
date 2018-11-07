@@ -70,16 +70,14 @@ namespace Core.Game.Operator
         }
     }
 
-    public class ClientMaster : Remote
+    public class ClientMaster : Client
     {
-        private readonly Client _connection;
         private readonly ServerSlaveProtocol.Client _protocol;
         public int RoomId { get; set; }
         public int OperatorId { get; set; }
 
-        public ClientMaster(Client client)
+        public ClientMaster(Game game, Network.Client client) : base(game, client)
         {
-            _connection = client;
             _protocol = ServerSlaveProtocol.GetClient(client);
         }
         
@@ -87,7 +85,7 @@ namespace Core.Game.Operator
 
         public override bool BeginRound(byte pad)
         {
-            var success = _protocol.Request(_connection, OperatorId, 0, pad);
+            var success = _protocol.Request(Connection, OperatorId, 0, pad);
             if (success)
                 base.BeginRound(pad);
             return success;
@@ -95,7 +93,7 @@ namespace Core.Game.Operator
 
         public override bool EndRound()
         {
-            var success = _protocol.Request(_connection, OperatorId, 1, 0);
+            var success = _protocol.Request(Connection, OperatorId, 1, 0);
             if (success)
                 base.EndRound();
             return success;
@@ -103,7 +101,7 @@ namespace Core.Game.Operator
 
         public override bool PushBall()
         {
-            var success = _protocol.Request(_connection, OperatorId, 2, 0);
+            var success = _protocol.Request(Connection, OperatorId, 2, 0);
             if (success)
                 base.PushBall();
             return success;
@@ -111,14 +109,14 @@ namespace Core.Game.Operator
 
         public override bool Surrender()
         {
-            var success = _protocol.Request(_connection, OperatorId, 3, 0);
+            var success = _protocol.Request(Connection, OperatorId, 3, 0);
             if (success)
                 base.Surrender();
             return success;
         }
     }
 
-    public class ServerSlave : Local
+    public class ServerSlave : Server
     {
         public bool Execute(int function, int operand)
         {
@@ -133,6 +131,10 @@ namespace Core.Game.Operator
                 default:
                     return false;
             }
+        }
+
+        public ServerSlave(Game game, EndPoint endPoint) : base(game, endPoint)
+        {
         }
     }
 }
