@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Myomyw</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1, minimum-scale=1,maximum-scale=1,target-densitydpi=device-dpi" />
+
+    <!--https://developer.apple.com/library/safari/documentation/AppleApplications/Reference/SafariHTMLRef/Articles/MetaTags.html-->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- force webkit on 360 -->
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <!-- force edge on IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="msapplication-tap-highlight" content="no" />
+
+    <!-- force full screen on some browser -->
+    <meta name="full-screen" content="yes" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+
+    <!-- force screen orientation on some browser -->
+    <!-- <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-orientation" content="portrait"> -->
+
+    <meta name="browsermode" content="application" />
+    <meta name="x5-page-mode" content="app" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+    <script>
+        (function () {
+            const nav = window.navigator;
+            const ua = nav.userAgent.toLowerCase();
+            const uaResult = /android (\d+(?:\.\d+)+)/i.exec(ua) || /android (\d+(?:\.\d+)+)/i.exec(nav.platform);
+            if (uaResult) {
+                const browserCheck = ua.match(/(qzone|micromessenger|qq)(mobile)?(browser)?\/?([\d.]+)/i);
+                if (browserCheck) {
+                    const browserVersion = parseFloat(browserCheck[4] || 0);
+                    if (browserVersion < 6.2) {
+                        const gameCanvas = document.getElementById("gameCanvas");
+                        const ctx = gameCanvas.getContext('2d');
+                        ctx.fillStyle = '#000000';
+                        ctx.fillRect(0, 0, 1, 1);
+                    }
+                }
+            }
+        })();
+    </script>
+    <script type="text/javascript" src="cocos2d-js-v3.13.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="main.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/resource.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/definitions.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/creator.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/lang.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/player.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/WelcomeScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/MainScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/MenuScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/OptionScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/LangOptionScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/AboutScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/ResultLayer.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/GameScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/DoubleGameScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/AIGameScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/OnlineGameScene.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="src/TutorialGameScene.js" charset="UTF-8"></script>
+</body>
+</html>
