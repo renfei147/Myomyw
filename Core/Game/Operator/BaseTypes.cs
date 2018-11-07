@@ -124,7 +124,7 @@ namespace Core.Game.Operator
     {
         static ServerNotificationProtocol()
         {
-            Name = "Core.Game.ServerMaster";
+            Name = "Core.Game.ServerNotification";
         }
 
         public override IProtocol GetServerProtocol()

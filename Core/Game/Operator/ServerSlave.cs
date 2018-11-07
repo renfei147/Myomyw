@@ -12,25 +12,42 @@ namespace Core.Game.Operator
             Name = "Core.Game.ServerSlave";
         }
 
+        public override IProtocol GetServerProtocol()
+        {
+            return new Server();
+        }
+
+        public override IProtocol GetClientProtocol()
+        {
+            return new Client();
+        }
+
+        public static Client GetClient(Network.Client client)
+        {
+            return client.Get<Client>(Name);
+        }
+
         private class Server : ProtocolBase
         {
+            private readonly List<ServerSlave> _hosts = new List<ServerSlave>();
+
             public override void Handle(EndPoint io)
             {
                 var idLow = io.ReadByte();
                 var idHigh = io.ReadByte();
-                var id = idHigh << 8 | idLow;
+                var id = (idHigh << 8) | idLow;
                 var function = io.ReadByte();
                 var operand = io.ReadByte();
                 io.BeginRequest(Id);
                 io.WriteByte((byte) (_hosts[id].Execute(function, operand) ? 1 : 0));
                 io.EndRequest();
             }
-
-            private readonly List<ServerSlave> _hosts = new List<ServerSlave>();
         }
 
         public class Client : ProtocolBase
         {
+            private TaskCompletionSource<byte> _completion;
+
             public override void Handle(EndPoint io)
             {
                 _completion.SetResult((byte) io.ReadByte());
@@ -50,37 +67,21 @@ namespace Core.Game.Operator
                 client.EndRequest();
                 return end.Result > 0;
             }
-
-            private TaskCompletionSource<byte> _completion;
-        }
-
-        public override IProtocol GetServerProtocol()
-        {
-            return new Server();
-        }
-
-        public override IProtocol GetClientProtocol()
-        {
-            return new Client();
-        }
-
-        public static Client GetClient(Network.Client client)
-        {
-            return client.Get<Client>(Name);
         }
     }
 
     public class ClientMaster : Client
     {
         private readonly ServerSlaveProtocol.Client _protocol;
-        public int RoomId { get; set; }
-        public int OperatorId { get; set; }
 
         public ClientMaster(Game game, Network.Client client) : base(game, client)
         {
             _protocol = ServerSlaveProtocol.GetClient(client);
         }
-        
+
+        public int RoomId { get; set; }
+        public int OperatorId { get; set; }
+
         public override Game.OperatorIdentity Identity { get; set; }
 
         public override bool BeginRound(byte pad)
@@ -118,6 +119,10 @@ namespace Core.Game.Operator
 
     public class ServerSlave : Server
     {
+        public ServerSlave(Game game, EndPoint endPoint) : base(game, endPoint)
+        {
+        }
+
         public bool Execute(int function, int operand)
         {
             switch (function)
@@ -131,10 +136,6 @@ namespace Core.Game.Operator
                 default:
                     return false;
             }
-        }
-
-        public ServerSlave(Game game, EndPoint endPoint) : base(game, endPoint)
-        {
         }
     }
 }

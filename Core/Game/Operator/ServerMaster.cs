@@ -10,35 +10,6 @@ namespace Core.Game.Operator
             Name = "Core.Game.ServerMaster";
         }
 
-        private class Client : ProtocolBase
-        {
-            public override void Handle(EndPoint io)
-            {
-                var function = io.ReadByte();
-                var operand = io.ReadByte();
-                io.BeginRequest(Id);
-                io.WriteByte((byte) (Slave.Execute(function, operand) ? 1 : 0));
-                io.EndRequest();
-            }
-
-            public ClientSlave Slave;
-        }
-
-        public class Server : ProtocolBase
-        {
-            public override void Handle(EndPoint io)
-            {
-            }
-
-            public void Request(Network.Client client, byte function, byte operand)
-            {
-                client.BeginRequest(Id);
-                client.WriteByte(function);
-                client.WriteByte(operand);
-                client.EndRequest();
-            }
-        }
-
         public override IProtocol GetServerProtocol()
         {
             return new Server();
@@ -47,6 +18,33 @@ namespace Core.Game.Operator
         public override IProtocol GetClientProtocol()
         {
             return new Client();
+        }
+
+        private class Client : ProtocolBase
+        {
+            public ClientSlave Slave;
+
+            public override void Handle(EndPoint io)
+            {
+                var function = io.ReadByte();
+                var operand = io.ReadByte();
+                Slave.Execute(function, operand);
+            }
+        }
+
+        private class Server : ProtocolBase
+        {
+            public override void Handle(EndPoint io)
+            {
+            }
+        }
+
+        public void Request(EndPoint client, byte function, byte operand)
+        {
+            client.BeginRequest(Id);
+            client.WriteByte(function);
+            client.WriteByte(operand);
+            client.EndRequest();
         }
     }
 
@@ -59,6 +57,10 @@ namespace Core.Game.Operator
 
     public class ClientSlave : Client
     {
+        protected ClientSlave(Game game, Network.Client connection) : base(game, connection)
+        {
+        }
+
         public bool Execute(int function, int operand)
         {
             switch (function)
@@ -72,10 +74,6 @@ namespace Core.Game.Operator
                 default:
                     return false;
             }
-        }
-
-        protected ClientSlave(Game game, Network.Client connection) : base(game, connection)
-        {
         }
     }
 }

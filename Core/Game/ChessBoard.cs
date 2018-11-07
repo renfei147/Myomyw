@@ -29,7 +29,7 @@ namespace Core.Game
         {
             Resize(SizeLeft + deltaLeft, SizeRight + deltaRight);
         }
-        
+
         private void Resize(int newSizeLeft, int newSizeRight)
         {
             if (newSizeLeft > 10 || newSizeRight > 10 || newSizeLeft < 3 || newSizeRight < 3) return;

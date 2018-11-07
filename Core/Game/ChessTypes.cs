@@ -80,7 +80,7 @@ namespace Core.Game
                 case Game.OperatorIdentity.Left:
                     game.Board.ResizeDelta(1, 0);
                     break;
-                case Game.OperatorIdentity.Right: 
+                case Game.OperatorIdentity.Right:
                     game.Board.ResizeDelta(0, 1);
                     break;
                 default:
@@ -101,7 +101,7 @@ namespace Core.Game
                 case Game.OperatorIdentity.Left:
                     game.Board.ResizeDelta(-1, 0);
                     break;
-                case Game.OperatorIdentity.Right: 
+                case Game.OperatorIdentity.Right:
                     game.Board.ResizeDelta(0, -1);
                     break;
                 default:

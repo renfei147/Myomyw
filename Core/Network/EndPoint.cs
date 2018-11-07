@@ -201,6 +201,5 @@ namespace Core.Network
         {
             return _hub.Get(actionName) as T;
         }
-        
     }
 }
