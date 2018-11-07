@@ -20,7 +20,7 @@ namespace Core.Network.Protocol
 
         public abstract IProtocol GetClientProtocol();
 
-        protected abstract class ProtocolBase : IProtocol
+        public abstract class ProtocolBase : IProtocol
         {
             // ReSharper disable once MemberHidesStaticFromOuterClass
             public string Name => Group<T>.Name;

@@ -196,5 +196,11 @@ namespace Core.Network
         {
             _hub.Add(protocol);
         }
+
+        public T Get<T>(string actionName) where T : class, IProtocol
+        {
+            return _hub.Get(actionName) as T;
+        }
+        
     }
 }
